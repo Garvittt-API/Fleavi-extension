@@ -2,6 +2,7 @@ import { getSettings, saveSettings, getHistory, deleteHistoryItem, getReadLaterL
 import { renderMarkdown, timeAgo } from './utils/helpers.js';
 import { getPersonaList } from './utils/personas.js';
 import { getLanguageList } from './utils/translator.js';
+import { checkProxyUsage } from './utils/summarizer.js';
 
 // State
 let activeTab = 'summary';
@@ -15,6 +16,7 @@ let pageContent = '';
 let isLoading = false;
 let historyData = [];
 let readLaterData = [];
+let proxyUsage = null;
 
 // Init
 document.addEventListener('DOMContentLoaded', async () => {
@@ -30,6 +32,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   historyData = await getHistory();
   readLaterData = await getReadLaterList();
+
+  // Check proxy usage if no API key set
+  if (!settings.apiKey) {
+    proxyUsage = await checkProxyUsage();
+  }
 
   renderSidePanel();
   setupEventListeners();
@@ -96,6 +103,12 @@ function renderSummaryTab() {
 
   return `
     <div class="summary-view">
+      ${proxyUsage ? `
+        <div class="usage-banner ${proxyUsage.remaining <= 5 ? 'warning' : ''}">
+          <span>${proxyUsage.remaining}/${proxyUsage.limit} free summaries left today</span>
+          ${proxyUsage.remaining <= 5 ? '<a class="usage-upgrade" href="#">Get unlimited</a>' : ''}
+        </div>
+      ` : ''}
       <!-- Persona Selector -->
       <div class="persona-bar">
         <label class="persona-label">Persona</label>
@@ -441,6 +454,16 @@ async function handleSummarize() {
     persona: currentPersona,
     translateTo
   }, (response) => {
+    // Update usage banner if proxy returned usage info
+    if (response?.usage) {
+      proxyUsage = { remaining: response.usage.remaining, limit: response.usage.limit };
+      const banner = document.querySelector('.usage-banner');
+      if (banner) {
+        banner.className = `usage-banner ${proxyUsage.remaining <= 5 ? 'warning' : ''}`;
+        banner.querySelector('span').textContent = `${proxyUsage.remaining}/${proxyUsage.limit} free summaries left today`;
+      }
+    }
+
     if (response?.error) {
       output.innerHTML = `<div style="color:var(--error);padding:12px;font-size:13px;">${escapeHtml(response.error)}</div>`;
     } else if (response?.summary) {
@@ -602,13 +625,19 @@ function openSettingsModal() {
 
         <div class="modal-section">
           <h4>AI Provider</h4>
+          ${!settings.apiKey ? `
+            <div class="modal-info">
+              <strong>Free tier active</strong> — ${proxyUsage ? `${proxyUsage.remaining}/${proxyUsage.limit} summaries left today` : 'Using Fleavi proxy'}
+            </div>
+          ` : ''}
           <label>Provider</label>
           <select id="settings-provider">
             <option value="openai" ${settings.provider === 'openai' ? 'selected' : ''}>OpenAI</option>
             <option value="anthropic" ${settings.provider === 'anthropic' ? 'selected' : ''}>Anthropic</option>
           </select>
-          <label>API Key</label>
-          <input id="settings-apikey" type="password" value="${settings.apiKey || ''}" placeholder="sk-..." />
+          <label>API Key <span class="label-hint">(optional — leave empty for free tier)</span></label>
+          <input id="settings-apikey" type="password" value="${settings.apiKey || ''}" placeholder="sk-... (optional)" />
+          <p class="modal-note">Add your own key for unlimited use. Free tier: 20/day without a key.</p>
         </div>
 
         <div class="modal-section">

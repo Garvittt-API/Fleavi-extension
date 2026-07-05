@@ -1,6 +1,10 @@
 import { getPersonaPrompt } from './personas.js';
 import { buildTranslationPrompt } from './translator.js';
 
+// Proxy URL — set to your deployed Cloudflare Worker
+// Leave empty to use direct API calls only
+const PROXY_URL = '';
+
 const SUMMARIZE_SYSTEM_PROMPT = `You are Fleavi, an expert web page summarizer. Given the content of a webpage, produce a clear, accurate summary.
 
 Rules:
@@ -28,8 +32,22 @@ const CHAT_SYSTEM_PROMPT = `You are Fleavi's AI assistant. You have been given t
 export async function summarizePage(content, options) {
   const { apiKey, provider, length, format, selectedText, persona, customPersonaInstructions, translateTo } = options;
 
+  const personaPrompt = getPersonaPrompt(persona || 'default', customPersonaInstructions || '');
+
+  // Try proxy first if no user API key
+  if (!apiKey && PROXY_URL) {
+    return await proxySummarize({
+      content,
+      format,
+      length,
+      persona,
+      customInstructions: personaPrompt,
+      translateTo
+    });
+  }
+
   if (!apiKey) {
-    return { error: 'No API key configured. Open Fleavi settings to add one.' };
+    return { error: 'No API key configured. Open Fleavi settings to add one, or check your internet connection.' };
   }
 
   const lengthGuide = {
@@ -37,8 +55,6 @@ export async function summarizePage(content, options) {
     medium: '1 paragraph with 3-5 key points',
     detailed: 'Full structured breakdown with all major points'
   };
-
-  const personaPrompt = getPersonaPrompt(persona || 'default', customPersonaInstructions || '');
 
   let systemPrompt = SUMMARIZE_SYSTEM_PROMPT;
   if (personaPrompt) {
@@ -77,6 +93,11 @@ ${content.slice(0, 12000)}`;
 export async function chatWithAI(history, pageContent, options) {
   const { apiKey, provider } = options;
 
+  // Try proxy first if no user API key
+  if (!apiKey && PROXY_URL) {
+    return await proxyChat({ history, pageContent });
+  }
+
   if (!apiKey) {
     return { error: 'No API key configured.' };
   }
@@ -100,6 +121,76 @@ export async function chatWithAI(history, pageContent, options) {
     return { error: `Chat failed: ${err.message}` };
   }
 }
+
+// ─── Proxy Calls ────────────────────────────────────────────────────────────
+
+async function proxySummarize(payload) {
+  const clientId = await getClientId();
+
+  const response = await fetch(`${PROXY_URL}/api/summarize`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Fleavi-Client': clientId
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    return { error: data.error || `Proxy error: ${response.status}`, usage: data.usage };
+  }
+
+  return { summary: data.summary, usage: data.usage };
+}
+
+async function proxyChat(payload) {
+  const clientId = await getClientId();
+
+  const response = await fetch(`${PROXY_URL}/api/chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Fleavi-Client': clientId
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    return { error: data.error || `Proxy error: ${response.status}` };
+  }
+
+  return { reply: data.reply, usage: data.usage };
+}
+
+export async function checkProxyUsage() {
+  if (!PROXY_URL) return null;
+
+  try {
+    const clientId = await getClientId();
+    const response = await fetch(`${PROXY_URL}/api/usage`, {
+      headers: { 'X-Fleavi-Client': clientId }
+    });
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+// Generate a stable client ID for rate limiting
+async function getClientId() {
+  const stored = await chrome.storage.local.get('fleaviClientId');
+  if (stored.fleaviClientId) return stored.fleaviClientId;
+
+  const id = crypto.randomUUID();
+  await chrome.storage.local.set({ fleaviClientId: id });
+  return id;
+}
+
+// ─── Direct API Calls ───────────────────────────────────────────────────────
 
 async function callOpenAI(apiKey, systemPrompt, userPrompt) {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
