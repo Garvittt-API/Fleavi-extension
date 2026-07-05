@@ -47,11 +47,29 @@ async function fetchPageContent() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab) return;
 
-  chrome.tabs.sendMessage(tab.id, { type: 'EXTRACT_CONTENT' }, (response) => {
-    if (response?.content) {
-      pageContent = response.content;
+  // Retry up to 3 times in case content script hasn't injected yet
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const response = await new Promise((resolve) => {
+        chrome.tabs.sendMessage(tab.id, { type: 'EXTRACT_CONTENT' }, (response) => {
+          if (chrome.runtime.lastError) {
+            resolve(null);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      if (response?.content) {
+        pageContent = response.content;
+        return;
+      }
+    } catch (e) {
+      // Ignore
     }
-  });
+    // Wait 500ms before retry
+    await new Promise(r => setTimeout(r, 500));
+  }
 }
 
 function renderSidePanel() {
@@ -378,7 +396,10 @@ function setupEventListeners() {
       const sourceIndex = parseInt(e.target.dataset.source, 10);
       if (!isNaN(sourceIndex)) {
         chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-          chrome.tabs.sendMessage(tab.id, { type: 'HIGHLIGHT_SOURCE', index: sourceIndex });
+          if (!tab) return;
+          chrome.tabs.sendMessage(tab.id, { type: 'HIGHLIGHT_SOURCE', index: sourceIndex }, () => {
+            if (chrome.runtime.lastError) return;
+          });
         });
       }
     }

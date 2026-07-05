@@ -131,10 +131,29 @@ async function handleSummarizePage(message, tabId, sendResponse) {
       'persona', 'customPersonaInstructions', 'translateTo'
     ]);
 
-    const contentResponse = await chrome.tabs.sendMessage(tabId, {
-      type: 'EXTRACT_CONTENT',
-      selectedText: message.selectedText
-    });
+    let contentResponse;
+    try {
+      contentResponse = await chrome.tabs.sendMessage(tabId, {
+        type: 'EXTRACT_CONTENT',
+        selectedText: message.selectedText
+      });
+    } catch (e) {
+      // Content script not injected — try to inject it
+      try {
+        await chrome.scripting.executeScript({
+          target: { tabId },
+          files: ['src/content.js']
+        });
+        // Retry after injection
+        contentResponse = await chrome.tabs.sendMessage(tabId, {
+          type: 'EXTRACT_CONTENT',
+          selectedText: message.selectedText
+        });
+      } catch (e2) {
+        sendResponse({ error: 'Could not connect to page. Try refreshing the page and trying again.' });
+        return;
+      }
+    }
 
     if (!contentResponse?.content) {
       sendResponse({ error: 'Could not extract page content' });

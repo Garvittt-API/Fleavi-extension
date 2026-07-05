@@ -8,11 +8,13 @@
     "storage",
     "contextMenus",
     "sidePanel",
-    "alarms"
+    "alarms",
+    "scripting"
   ],
   "host_permissions": [
     "https://api.openai.com/*",
-    "https://api.anthropic.com/*"
+    "https://api.anthropic.com/*",
+    "https://api.groq.com/*"
   ],
   "background": {
     "service_worker": "src/background.js",
