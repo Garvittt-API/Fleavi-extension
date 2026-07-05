@@ -1,4 +1,4 @@
-// Generate professional SnapSum extension icons
+// Generate professional Fleavi extension icons
 // Run: node generate-icons.js
 const fs = require('fs');
 const path = require('path');
@@ -68,18 +68,14 @@ function inRoundedRect(px, py, rx, ry, rw, rh, radius) {
   return Math.sqrt(dx * dx + dy * dy) <= radius;
 }
 
-// Draw the "S" letter
-function inS(px, py) {
+// Draw the "F" letter
+function inF(px, py) {
   // Top bar
   if (py > 0.22 && py < 0.33 && px > 0.25 && px < 0.78) return true;
-  // Top-left vertical
-  if (py > 0.22 && py < 0.52 && px > 0.25 && px < 0.38) return true;
+  // Left vertical stem
+  if (py > 0.22 && py < 0.78 && px > 0.25 && px < 0.38) return true;
   // Middle bar
-  if (py > 0.42 && py < 0.58 && px > 0.22 && px < 0.75) return true;
-  // Bottom-right vertical
-  if (py > 0.48 && py < 0.78 && px > 0.62 && px < 0.75) return true;
-  // Bottom bar
-  if (py > 0.67 && py < 0.78 && px > 0.22 && px < 0.75) return true;
+  if (py > 0.42 && py < 0.53 && px > 0.25 && px < 0.65) return true;
   return false;
 }
 
@@ -118,13 +114,13 @@ function drawIcon(px, py, w, h) {
   const dist = roundedRectSDF(px, py, 0, 0, 1, 1, cornerRadius);
   const alpha = Math.min(1, Math.max(0, -dist * w * 0.5 + 1));
 
-  // Check if inside S letter
-  const isS = inS(px, py);
+  // Check if inside F letter
+  const isF = inF(px, py);
 
   // Check if inside bolt accent
   const isBolt = inBolt(px, py);
 
-  if (isS) {
+  if (isF) {
     return [255, 255, 255, Math.round(255 * alpha)];
   }
 
@@ -171,11 +167,11 @@ const socialPng = createPNG(1200, 630, (px, py, w, h) => {
   if (inIcon) {
     const localPx = (px - iconX) / iconSize;
     const localPy = (py - iconY) / iconSize;
-    if (inS(localPx, localPy)) return [255, 255, 255, 255];
+    if (inF(localPx, localPy)) return [255, 255, 255, 255];
     return [108, 92, 231, 255];
   }
 
-  // Text area - "SnapSum" title
+  // Text area - "Fleavi" title
   // Simple horizontal lines to simulate text
   if (py > 0.35 && py < 0.55) {
     if (px > 0.325 && px < 0.75) {

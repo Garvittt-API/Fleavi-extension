@@ -1,4 +1,4 @@
-# SnapSum Launch Checklist
+# Fleavi Launch Checklist
 
 ## Pre-Launch
 - [ ] Generate proper 128x128, 48x48, 16x16 PNG icons (replace placeholders)
@@ -21,7 +21,7 @@
 - [ ] Verify no permissions warnings beyond what's needed
 
 ## Store Listings
-- [ ] Extension name: "SnapSum — AI Page Summarizer"
+- [ ] Extension name: "Fleavi — AI Page Summarizer"
 - [ ] Short description (132 chars): "Summarize any webpage in one click with AI. Interactive chat, source citations, translation, and exports to Notion/Obsidian."
 - [ ] Detailed description written
 - [ ] Category: Productivity

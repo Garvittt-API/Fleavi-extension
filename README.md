@@ -1,12 +1,12 @@
 <div align="center">
 
-# ⚡ SnapSum
+# ⚡ Fleavi
 
 ### Summarize Any Page. In One Click.
 
 A powerful browser extension that uses AI to instantly summarize web pages, with interactive chat, source citations, and seamless exports to your favorite tools.
 
-[![Chrome](https://img.shields.io/badge/Chrome-Extension-4285F4?logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore/detail/snapsum)
+[![Chrome](https://img.shields.io/badge/Chrome-Extension-4285F4?logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore/detail/fleavi)
 [![Firefox](https://img.shields.io/badge/Firefox-Extension-FF7139?logo=firefox-browser&logoColor=white)]()
 [![Edge](https://img.shields.io/badge/Edge-Extension-0078D4?logo=microsoft-edge&logoColor=white)]()
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
@@ -15,9 +15,9 @@ A powerful browser extension that uses AI to instantly summarize web pages, with
 
 ---
 
-## 🎯 What is SnapSum?
+## 🎯 What is Fleavi?
 
-SnapSum is a lightweight browser extension that distills any web page into concise, actionable summaries using AI. Whether you're reading research papers, blog posts, news articles, or documentation — SnapSum gives you the key insights in seconds.
+Fleavi is a lightweight browser extension that distills any web page into concise, actionable summaries using AI. Whether you're reading research papers, blog posts, news articles, or documentation — Fleavi gives you the key insights in seconds.
 
 ## ✨ Features
 
@@ -97,7 +97,7 @@ Then load in your browser:
 
 ### First-Time Setup
 
-1. Click the SnapSum icon in your toolbar
+1. Click the Fleavi icon in your toolbar
 2. Click **Full Panel** to open the side panel
 3. Click the **⚙ Settings** icon
 4. Select your AI provider and enter your API key
@@ -107,7 +107,7 @@ Then load in your browser:
 
 ## 🔑 API Keys
 
-SnapSum supports two AI providers:
+Fleavi supports two AI providers:
 
 | Provider | Model | Get API Key |
 |----------|-------|-------------|
@@ -199,6 +199,6 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 **Built with ⚡ by [Garvittt](https://github.com/Garvittt-API)**
 
-If you find SnapSum useful, please give it a ⭐ on GitHub!
+If you find Fleavi useful, please give it a ⭐ on GitHub!
 
 </div>

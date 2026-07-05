@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "SnapSum",
+  "name": "Fleavi",
   "description": "Summarize any webpage in one click with AI. Interactive chat, source citations, translation, and seamless exports.",
   "version": "1.0.0",
   "permissions": [
@@ -59,7 +59,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "snapsum@extension",
+      "id": "fleavi@extension",
       "strict_min_version": "109.0"
     }
   }

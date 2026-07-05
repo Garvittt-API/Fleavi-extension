@@ -5,9 +5,9 @@ export async function exportToNotion(summary, title, url, apiKey) {
     return { error: 'Notion API key not configured. Add it in Settings.' };
   }
 
-  // Find or create a SnapSum page in Notion
+  // Find or create a Fleavi page in Notion
   try {
-    // Search for existing SnapSum database or page
+    // Search for existing Fleavi database or page
     const searchRes = await fetch('https://api.notion.com/v1/search', {
       method: 'POST',
       headers: {
@@ -16,7 +16,7 @@ export async function exportToNotion(summary, title, url, apiKey) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        query: 'SnapSum Summaries',
+        query: 'Fleavi Summaries',
         filter: { value: 'database', property: 'object' }
       })
     });
@@ -38,7 +38,7 @@ export async function exportToNotion(summary, title, url, apiKey) {
         body: JSON.stringify({
           parent: { type: 'page_id', page_id: await findTopLevelPage(apiKey) },
           properties: {
-            title: [{ text: { content: `SnapSum: ${title || 'Untitled'}` } }]
+            title: [{ text: { content: `Fleavi: ${title || 'Untitled'}` } }]
           },
           children: [
             {
@@ -124,8 +124,8 @@ async function findTopLevelPage(apiKey) {
 export function exportToObsidian(summary, title, vaultName) {
   // Obsidian URI scheme: obsidian://new?vault=VAULT&name=TITLE&content=CONTENT
   const vault = vaultName || 'MyVault';
-  const fileName = (title || 'SnapSum Summary').replace(/[\/\\:*?"<>|]/g, '-').slice(0, 100);
-  const content = `# ${title || 'Summary'}\n\n${summary}\n\n---\n*Summarized by SnapSum on ${new Date().toLocaleDateString()}*\n*Source: ${window.location?.href || 'N/A'}*`;
+  const fileName = (title || 'Fleavi Summary').replace(/[\/\\:*?"<>|]/g, '-').slice(0, 100);
+  const content = `# ${title || 'Summary'}\n\n${summary}\n\n---\n*Summarized by Fleavi on ${new Date().toLocaleDateString()}*\n*Source: ${window.location?.href || 'N/A'}*`;
 
   const uri = `obsidian://new?vault=${encodeURIComponent(vault)}&name=${encodeURIComponent(fileName)}&content=${encodeURIComponent(content)}`;
   return uri;
@@ -137,8 +137,8 @@ export function exportToKindle(summary, title, kindleEmail) {
   }
 
   // Create a mailto link with the summary as body
-  const subject = `SnapSum: ${title || 'Summary'}`;
-  const body = `${title || 'Summary'}\n\n${summary}\n\n---\nSummarized by SnapSum`;
+  const subject = `Fleavi: ${title || 'Summary'}`;
+  const body = `${title || 'Summary'}\n\n${summary}\n\n---\nSummarized by Fleavi`;
   const mailto = `mailto:${kindleEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
   return { mailto };

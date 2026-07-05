@@ -124,7 +124,7 @@
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
       const span = document.createElement('span');
-      span.id = 'snapsum-highlight';
+      span.id = 'fleavi-highlight';
       span.style.backgroundColor = 'rgba(108, 92, 231, 0.2)';
       span.style.borderRadius = '2px';
       try {
@@ -149,7 +149,7 @@
       el.style.transition = '';
     });
     sourceHighlights = [];
-    const existing = document.getElementById('snapsum-highlight');
+    const existing = document.getElementById('fleavi-highlight');
     if (existing) {
       existing.outerHTML = existing.innerHTML;
     }

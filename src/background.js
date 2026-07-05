@@ -8,23 +8,23 @@ import { summarizePage, chatWithAI } from './utils/summarizer.js';
 // Context menu: summarize selected text
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
-    id: 'snapsum-summarize-selection',
-    title: 'Summarize Selection with SnapSum',
+    id: 'fleavi-summarize-selection',
+    title: 'Summarize Selection with Fleavi',
     contexts: ['selection']
   });
 
   chrome.contextMenus.create({
-    id: 'snapsum-add-read-later',
-    title: 'Save to SnapSum Read Later',
+    id: 'fleavi-add-read-later',
+    title: 'Save to Fleavi Read Later',
     contexts: ['page', 'link']
   });
 
   // Set up daily digest alarm
-  chrome.alarms.create('snapsum-digest', { periodInMinutes: 60 });
+  chrome.alarms.create('fleavi-digest', { periodInMinutes: 60 });
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === 'snapsum-summarize-selection') {
+  if (info.menuItemId === 'fleavi-summarize-selection') {
     chrome.sidePanel.open({ tabId: tab.id });
     chrome.tabs.sendMessage(tab.id, {
       type: 'SUMMARIZE_SELECTION',
@@ -32,7 +32,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     });
   }
 
-  if (info.menuItemId === 'snapsum-add-read-later') {
+  if (info.menuItemId === 'fleavi-add-read-later') {
     addToReadLaterFromBackground({
       url: info.linkUrl || info.pageUrl,
       title: tab.title || 'Untitled'
@@ -42,7 +42,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
 // Alarm handler for daily digests
 chrome.alarms.onAlarm.addListener(async (alarm) => {
-  if (alarm.name === 'snapsum-digest') {
+  if (alarm.name === 'fleavi-digest') {
     const settings = await chrome.storage.sync.get(['digestEnabled', 'digestTime', 'readLaterList']);
     if (!settings.digestEnabled) return;
 
@@ -68,7 +68,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
       const history = (await chrome.storage.local.get(['summaryHistory'])).summaryHistory || [];
       history.unshift({
         id: `digest-${Date.now()}`,
-        url: 'snapsum://daily-digest',
+        url: 'fleavi://daily-digest',
         title: `Daily Digest — ${now.toLocaleDateString()}`,
         summary: digestResult.summary,
         timestamp: Date.now(),

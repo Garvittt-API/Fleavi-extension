@@ -1,7 +1,7 @@
 import { getPersonaPrompt } from './personas.js';
 import { buildTranslationPrompt } from './translator.js';
 
-const SUMMARIZE_SYSTEM_PROMPT = `You are SnapSum, an expert web page summarizer. Given the content of a webpage, produce a clear, accurate summary.
+const SUMMARIZE_SYSTEM_PROMPT = `You are Fleavi, an expert web page summarizer. Given the content of a webpage, produce a clear, accurate summary.
 
 Rules:
 - Be concise and factual
@@ -23,13 +23,13 @@ Available formats:
 - "structured": Structured breakdown with headings and sub-points
 - "mindmap": Nested bullet hierarchy showing topic relationships`;
 
-const CHAT_SYSTEM_PROMPT = `You are SnapSum's AI assistant. You have been given the content of a webpage and its summary. Answer the user's questions about this page accurately and concisely. If the answer is not in the page content, say so. Cite specific parts of the text when possible using [source: N] markers.`;
+const CHAT_SYSTEM_PROMPT = `You are Fleavi's AI assistant. You have been given the content of a webpage and its summary. Answer the user's questions about this page accurately and concisely. If the answer is not in the page content, say so. Cite specific parts of the text when possible using [source: N] markers.`;
 
 export async function summarizePage(content, options) {
   const { apiKey, provider, length, format, selectedText, persona, customPersonaInstructions, translateTo } = options;
 
   if (!apiKey) {
-    return { error: 'No API key configured. Open SnapSum settings to add one.' };
+    return { error: 'No API key configured. Open Fleavi settings to add one.' };
   }
 
   const lengthGuide = {

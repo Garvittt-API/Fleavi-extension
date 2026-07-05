@@ -25,8 +25,8 @@ function renderPopup() {
     <div class="popup-container">
       <div class="header">
         <div class="header-left">
-          <div class="logo">S</div>
-          <h1>SnapSum</h1>
+          <div class="logo">F</div>
+          <h1>Fleavi</h1>
         </div>
         <div class="header-actions">
           <button class="icon-btn" id="btn-settings" title="Settings">
