@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SnapSum",
-  "description": "Summarize any webpage in one click. Interactive AI chat, source citations, and seamless exports.",
+  "description": "Summarize any webpage in one click with AI. Interactive chat, source citations, translation, and seamless exports.",
   "version": "1.0.0",
   "permissions": [
     "activeTab",
@@ -55,6 +55,12 @@
         "mac": "Command+Shift+C"
       },
       "description": "Open AI chat"
+    }
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "snapsum@extension",
+      "strict_min_version": "109.0"
     }
   }
 }
