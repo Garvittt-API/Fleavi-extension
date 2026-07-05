@@ -6,8 +6,6 @@ compatibility_date = "2024-01-01"
 OPENAI_MODEL = "gpt-4o-mini"
 FREE_DAILY_LIMIT = "20"
 
-# KV namespace for rate limiting (create with: wrangler kv:namespace create RATE_LIMITS)
-# Then paste the ID below:
-# [[kv_namespaces]]
-# binding = "RATE_LIMITS"
-# id = "YOUR_KV_NAMESPACE_ID"
+[[kv_namespaces]]
+binding = "RATE_LIMITS"
+id = "4e10220a703a4481b9085dcc4590d666"

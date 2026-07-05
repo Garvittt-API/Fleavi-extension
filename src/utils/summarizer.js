@@ -3,7 +3,7 @@ import { buildTranslationPrompt } from './translator.js';
 
 // Proxy URL — set to your deployed Cloudflare Worker
 // Leave empty to use direct API calls only
-const PROXY_URL = '';
+const PROXY_URL = 'https://fleavi-proxy.garvitchoudhary2315.workers.dev';
 
 const SUMMARIZE_SYSTEM_PROMPT = `You are Fleavi, an expert web page summarizer. Given the content of a webpage, produce a clear, accurate summary.
 
