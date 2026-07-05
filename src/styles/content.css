@@ -1,0 +1,8 @@
+/* Content script overlay styles */
+#snapsum-highlight {
+  background-color: rgba(108, 92, 231, 0.15) !important;
+  outline: 2px solid rgba(108, 92, 231, 0.4) !important;
+  outline-offset: 2px;
+  border-radius: 3px;
+  transition: background-color 0.3s ease, outline 0.3s ease;
+}

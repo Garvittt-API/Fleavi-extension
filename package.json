@@ -1,0 +1,13 @@
+{
+  "name": "snapsum-extension",
+  "version": "1.0.0",
+  "description": "Summarize any webpage in one click",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Load the extension directory in your browser'",
+    "build": "echo 'Extension is ready to load — no build step required'",
+    "lint": "echo 'Linting...'"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}

@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnapSum — Side Panel Preview</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #E8EDF2;
+      display: flex;
+      justify-content: flex-end;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* Simulated webpage behind the panel */
+    .page-backdrop {
+      flex: 1;
+      padding: 48px;
+      max-width: calc(100vw - 400px);
+    }
+
+    .page-backdrop h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #2D3436;
+      margin-bottom: 12px;
+    }
+
+    .page-backdrop .meta {
+      font-size: 13px;
+      color: #636E72;
+      margin-bottom: 24px;
+    }
+
+    .page-backdrop p {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #2D3436;
+      margin-bottom: 16px;
+      max-width: 640px;
+    }
+
+    /* Side Panel */
+    .side-panel {
+      width: 380px;
+      height: 100vh;
+      background: #FFFFFF;
+      border-left: 1px solid #DFE6E9;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -4px 0 24px rgba(0,0,0,0.06);
+      position: sticky;
+      top: 0;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid #DFE6E9;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo {
+      width: 24px;
+      height: 24px;
+      background: #6C5CE7;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .header h1 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #2D3436;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 2px;
+    }
+
+    .icon-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #636E72;
+      transition: all 0.15s ease;
+    }
+
+    .icon-btn:hover {
+      background: #F8F9FA;
+      color: #2D3436;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #DFE6E9;
+      flex-shrink: 0;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px 12px;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      color: #636E72;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .tab:hover { color: #2D3436; }
+
+    .tab.active {
+      color: #6C5CE7;
+      border-bottom-color: #6C5CE7;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Summary View */
+    .summary-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .format-chip {
+      padding: 5px 10px;
+      border: 1px solid #DFE6E9;
+      border-radius: 20px;
+      background: #FFFFFF;
+      font-size: 11px;
+      font-weight: 500;
+      color: #636E72;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .format-chip:hover {
+      border-color: #6C5CE7;
+      color: #6C5CE7;
+    }
+
+    .format-chip.active {
+      background: rgba(108, 92, 231, 0.1);
+      border-color: #6C5CE7;
+      color: #6C5CE7;
+    }
+
+    .length-selector {
+      display: flex;
+      gap: 3px;
+      background: #F8F9FA;
+      border-radius: 6px;
+      padding: 2px;
+      margin-bottom: 12px;
+    }
+
+    .length-btn {
+      flex: 1;
+      padding: 5px 8px;
+      border: none;
+      border-radius: 5px;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 500;
+      color: #636E72;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .length-btn.active {
+      background: #FFFFFF;
+      color: #2D3436;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-summarize {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #6C5CE7;
+      color: white;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .btn-summarize:hover {
+      background: #5A4BD1;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+    }
+
+    .btn-summarize:active {
+      transform: translateY(0);
+    }
+
+    /* Summary Output */
+    .summary-output {
+      flex: 1;
+      background: #F8F9FA;
+      border-radius: 12px;
+      padding: 16px;
+      overflow-y: auto;
+      min-height: 100px;
+    }
+
+    .summary-output.empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #636E72;
+    }
+
+    .empty-icon { font-size: 32px; opacity: 0.5; }
+    .empty-text { font-size: 13px; }
+
+    .summary-content {
+      font-size: 13px;
+      line-height: 1.65;
+      color: #2D3436;
+    }
+
+    .summary-content h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 14px 0 6px;
+      color: #2D3436;
+    }
+
+    .summary-content h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 10px 0 4px;
+      color: #2D3436;
+    }
+
+    .summary-content ul {
+      padding-left: 16px;
+      margin: 6px 0;
+    }
+
+    .summary-content li {
+      margin-bottom: 5px;
+      color: #2D3436;
+    }
+
+    .summary-content li::marker {
+      color: #6C5CE7;
+    }
+
+    .source-link {
+      color: #6C5CE7;
+      text-decoration: none;
+      font-size: 10px;
+      cursor: pointer;
+      opacity: 0.8;
+    }
+
+    .source-link:hover {
+      text-decoration: underline;
+      opacity: 1;
+    }
+
+    /* Export Bar */
+    .export-bar {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #DFE6E9;
+    }
+
+    .export-btn {
+      flex: 1;
+      padding: 7px 8px;
+      border: 1px solid #DFE6E9;
+      border-radius: 6px;
+      background: #FFFFFF;
+      font-size: 11px;
+      font-weight: 500;
+      color: #636E72;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .export-btn:hover {
+      border-color: #6C5CE7;
+      color: #6C5CE7;
+    }
+
+    /* Chat View */
+    .chat-view {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+    }
+
+    .chat-view.active {
+      display: flex;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #636E72;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .chat-empty-icon { font-size: 32px; opacity: 0.5; }
+    .chat-empty-text { font-size: 13px; }
+    .chat-empty-hint { font-size: 11px; opacity: 0.7; }
+
+    .message {
+      max-width: 90%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: #6C5CE7;
+      color: white;
+      border-bottom-right-radius: 2px;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+      background: #F8F9FA;
+      color: #2D3436;
+      border-bottom-left-radius: 2px;
+    }
+
+    .chat-input-area {
+      padding: 12px 16px;
+      border-top: 1px solid #DFE6E9;
+      display: flex;
+      gap: 8px;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid #DFE6E9;
+      border-radius: 8px;
+      background: #FFFFFF;
+      color: #2D3436;
+      font-family: inherit;
+      font-size: 13px;
+      resize: none;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .chat-input:focus {
+      border-color: #6C5CE7;
+    }
+
+    .chat-input::placeholder {
+      color: #A0AEC0;
+    }
+
+    .chat-send {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 8px;
+      background: #6C5CE7;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .chat-send:hover {
+      background: #5A4BD1;
+    }
+
+    /* History View */
+    .history-view {
+      flex: 1;
+      display: none;
+      overflow-y: auto;
+      padding: 12px 16px;
+    }
+
+    .history-view.active {
+      display: block;
+    }
+
+    .history-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #636E72;
+      padding: 32px 0;
+    }
+
+    .history-item {
+      padding: 12px;
+      border: 1px solid #DFE6E9;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .history-item:hover {
+      border-color: #6C5CE7;
+      box-shadow: 0 2px 8px rgba(108, 92, 231, 0.1);
+    }
+
+    .history-item-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #2D3436;
+    }
+
+    .history-item-url {
+      font-size: 11px;
+      color: #636E72;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-bottom: 4px;
+    }
+
+    .history-item-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .history-item-time {
+      font-size: 10px;
+      color: #636E72;
+    }
+
+    .history-item-delete {
+      font-size: 10px;
+      color: #E17055;
+      background: none;
+      border: none;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      font-family: inherit;
+    }
+
+    .history-item:hover .history-item-delete {
+      opacity: 1;
+    }
+
+    /* Loading */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 24px;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #DFE6E9;
+      border-top-color: #6C5CE7;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Settings Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: #FFFFFF;
+      border-radius: 12px;
+      padding: 24px;
+      width: 320px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+
+    .modal h3 {
+      font-size: 16px;
+      margin-bottom: 16px;
+      color: #2D3436;
+    }
+
+    .modal label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #2D3436;
+    }
+
+    .modal input, .modal select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #DFE6E9;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      font-family: inherit;
+      background: #FFFFFF;
+      color: #2D3436;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .modal input:focus, .modal select:focus {
+      border-color: #6C5CE7;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .modal-actions button {
+      flex: 1;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+
+    .btn-save {
+      border: none;
+      background: #6C5CE7;
+      color: white;
+    }
+
+    .btn-save:hover { background: #5A4BD1; }
+
+    .btn-cancel {
+      border: 1px solid #DFE6E9;
+      background: #FFFFFF;
+      color: #2D3436;
+    }
+
+    .btn-cancel:hover { background: #F8F9FA; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #2D3436;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      z-index: 200;
+      opacity: 0;
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #DFE6E9; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #636E72; }
+  </style>
+</head>
+<body>
+
+  <!-- Simulated webpage content behind the panel -->
+  <div class="page-backdrop">
+    <h1>The Future of Remote Work in 2026</h1>
+    <div class="meta">Published on July 5, 2026 &middot; 8 min read &middot; Technology & Business</div>
+    <p>The landscape of work has undergone a dramatic transformation over the past several years. What began as a forced experiment during the global pandemic has evolved into a fundamental restructuring of how organizations think about productivity, collaboration, and talent acquisition.</p>
+    <p>Recent studies indicate that 73% of knowledge workers now prefer hybrid or fully remote arrangements, up from 57% in 2023. This shift has prompted major corporations to reconsider their real estate footprints, with several Fortune 500 companies reducing office space by 30-40% since 2024.</p>
+    <p>The technology stack supporting remote work has also matured significantly. AI-powered collaboration tools, immersive virtual reality meeting spaces, and asynchronous communication platforms have addressed many of the early pain points of distributed teams.</p>
+    <p>However, challenges remain. Mental health concerns related to isolation, blurring of work-life boundaries, and difficulties in onboarding junior employees continue to be areas that organizations must actively address through policy and cultural interventions.</p>
+    <p>Looking ahead, the consensus among industry leaders is that flexibility will remain a key differentiator in attracting top talent. Companies that embrace asynchronous-first cultures and invest in robust digital infrastructure are positioned to thrive in this new era of work.</p>
+  </div>
+
+  <!-- SnapSum Side Panel -->
+  <div class="side-panel" id="side-panel">
+    <div class="header">
+      <div class="header-left">
+        <div class="logo">S</div>
+        <h1>SnapSum</h1>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="btn-theme" title="Toggle dark mode">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="btn-settings" title="Settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.32 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="summary">Summary</button>
+      <button class="tab" data-tab="chat">Chat</button>
+      <button class="tab" data-tab="history">History</button>
+    </div>
+
+    <div class="main-content">
+      <!-- Summary Tab -->
+      <div class="summary-view" id="summary-tab">
+        <div class="controls">
+          <button class="format-chip active" data-format="bullets">Bullets</button>
+          <button class="format-chip" data-format="prose">Prose</button>
+          <button class="format-chip" data-format="structured">Structured</button>
+        </div>
+
+        <div class="length-selector">
+          <button class="length-btn" data-length="short">Short</button>
+          <button class="length-btn active" data-length="medium">Medium</button>
+          <button class="length-btn" data-length="detailed">Detailed</button>
+        </div>
+
+        <button class="btn-summarize" id="btn-summarize">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+          Summarize This Page
+        </button>
+
+        <div class="summary-output empty" id="summary-output">
+          <div class="empty-icon">&#9998;</div>
+          <div class="empty-text">Click above to summarize</div>
+        </div>
+      </div>
+
+      <!-- Chat Tab -->
+      <div class="chat-view" id="chat-tab">
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-empty">
+            <div class="chat-empty-icon">&#128172;</div>
+            <div class="chat-empty-text">Ask anything about this page</div>
+            <div class="chat-empty-hint">The AI has read the full page content</div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <textarea class="chat-input" id="chat-input" placeholder="Ask about this page..." rows="1"></textarea>
+          <button class="chat-send" id="btn-send" title="Send">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- History Tab -->
+      <div class="history-view" id="history-tab">
+        <div class="history-empty">
+          <div class="empty-icon">&#128218;</div>
+          <div class="empty-text">No summaries yet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <h3>Settings</h3>
+      <label>API Provider</label>
+      <select id="settings-provider">
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Anthropic</option>
+      </select>
+      <label>API Key</label>
+      <input type="password" id="settings-apikey" placeholder="sk-..." />
+      <label>Kindle Email (optional)</label>
+      <input type="email" id="settings-kindle" placeholder="your-kindle@kindle.com" />
+      <div class="modal-actions">
+        <button class="btn-save" id="btn-save-settings">Save</button>
+        <button class="btn-cancel" id="btn-cancel-settings">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // --- State ---
+    let activeTab = 'summary';
+    let currentFormat = 'bullets';
+    let currentLength = 'medium';
+    let isDark = false;
+
+    // --- Tab Switching ---
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        activeTab = tab.dataset.tab;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        document.getElementById('summary-tab').style.display = activeTab === 'summary' ? 'flex' : 'none';
+        document.getElementById('chat-tab').style.display = activeTab === 'chat' ? 'flex' : 'none';
+        document.getElementById('history-tab').style.display = activeTab === 'history' ? 'block' : 'none';
+      });
+    });
+
+    // --- Format Chips ---
+    document.querySelectorAll('.format-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        currentFormat = chip.dataset.format;
+        document.querySelectorAll('.format-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+      });
+    });
+
+    // --- Length Buttons ---
+    document.querySelectorAll('.length-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentLength = btn.dataset.length;
+        document.querySelectorAll('.length-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // --- Summarize Button (mock) ---
+    document.getElementById('btn-summarize').addEventListener('click', () => {
+      const btn = document.getElementById('btn-summarize');
+      const output = document.getElementById('summary-output');
+
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> Analyzing...';
+      output.className = 'summary-output';
+      output.innerHTML = '<div class="loading"><div class="spinner"></div><span style="font-size:13px;color:#636E72;">Extracting key information...</span></div>';
+
+      setTimeout(() => {
+        output.innerHTML = `
+          <div class="summary-content">
+            <h3>Key Takeaways</h3>
+            <ul>
+              <li><strong>73% of knowledge workers</strong> prefer hybrid or fully remote arrangements, up from 57% in 2023 <a class="source-link" href="#">[source]</a></li>
+              <li><strong>Major corporations</strong> are reducing office space by 30-40% since 2024</li>
+              <li><strong>AI-powered tools</strong> and VR meeting spaces have addressed early remote work pain points</li>
+              <li><strong>Mental health concerns</strong> related to isolation and work-life boundaries remain challenges</li>
+              <li><strong>Flexibility</strong> is the key differentiator for attracting top talent going forward</li>
+            </ul>
+            <h3>Market Impact</h3>
+            <ul>
+              <li>Commercial real estate demand shifting toward smaller, flexible spaces</li>
+              <li>Remote work tech stack valued at $85B globally</li>
+              <li>Asynchronous-first cultures gaining competitive advantage</li>
+            </ul>
+          </div>
+          <div class="export-bar">
+            <button class="export-btn" onclick="showToast('Copied to clipboard')">Copy</button>
+            <button class="export-btn" onclick="showToast('Markdown copied')">Markdown</button>
+            <button class="export-btn" onclick="showToast('Paste into Notion')">Notion</button>
+            <button class="export-btn" onclick="showToast('Paste into Obsidian')">Obsidian</button>
+            <button class="export-btn" onclick="showToast('Copy & paste into Kindle')">Kindle</button>
+          </div>
+        `;
+
+        btn.disabled = false;
+        btn.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+          Summarize This Page
+        `;
+      }, 1500);
+    });
+
+    // --- Chat (mock) ---
+    const chatMessages = [];
+    const chatInput = document.getElementById('chat-input');
+    const chatContainer = document.getElementById('chat-messages');
+
+    document.getElementById('btn-send').addEventListener('click', sendChat);
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChat();
+      }
+    });
+
+    // Auto-resize input
+    chatInput.addEventListener('input', () => {
+      chatInput.style.height = 'auto';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+    });
+
+    function sendChat() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      // Remove empty state
+      const empty = chatContainer.querySelector('.chat-empty');
+      if (empty) empty.remove();
+
+      // Add user message
+      chatMessages.push({ role: 'user', content: text });
+      const userEl = document.createElement('div');
+      userEl.className = 'message user';
+      userEl.textContent = text;
+      chatContainer.appendChild(userEl);
+
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+
+      // Show loading
+      const loadingEl = document.createElement('div');
+      loadingEl.className = 'message assistant';
+      loadingEl.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div>';
+      chatContainer.appendChild(loadingEl);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      // Mock response
+      setTimeout(() => {
+        loadingEl.remove();
+        const replies = [
+          'The article highlights that 73% of knowledge workers prefer remote or hybrid work, up from 57% in 2023. This represents a significant shift in workforce preferences.',
+          'According to the text, companies have reduced office space by 30-40% since 2024. The main drivers are cost savings and the maturation of remote work technology.',
+          'The article identifies two key challenges: mental health concerns from isolation and difficulties onboarding junior employees. Both require active policy interventions.',
+          'Looking ahead, the consensus is that flexibility will remain the key differentiator in attracting top talent. Asynchronous-first cultures are gaining competitive advantage.',
+          'The remote work tech stack, including AI collaboration tools and VR meeting spaces, is now valued at approximately $85 billion globally.'
+        ];
+        const reply = replies[chatMessages.length % replies.length];
+
+        chatMessages.push({ role: 'assistant', content: reply });
+        const assistantEl = document.createElement('div');
+        assistantEl.className = 'message assistant';
+        assistantEl.textContent = reply;
+        chatContainer.appendChild(assistantEl);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }, 800 + Math.random() * 600);
+    }
+
+    // --- Dark Mode ---
+    document.getElementById('btn-theme').addEventListener('click', () => {
+      isDark = !isDark;
+      const panel = document.getElementById('side-panel');
+      if (isDark) {
+        panel.style.background = '#1A1A2E';
+        panel.style.borderLeftColor = '#2D3748';
+        document.querySelectorAll('.tab, .format-chip, .length-btn, .export-btn, .icon-btn, .btn-cancel').forEach(el => {
+          el.style.color = '#A0AEC0';
+          if (el.classList.contains('format-chip') || el.classList.contains('export-btn')) {
+            el.style.borderColor = '#2D3748';
+            el.style.background = '#1A1A2E';
+          }
+        });
+        document.querySelectorAll('.summary-output, .chat-messages, .history-view').forEach(el => {
+          el.style.background = '#16213E';
+        });
+        document.querySelectorAll('.message.assistant, .length-selector').forEach(el => {
+          el.style.background = '#16213E';
+        });
+        document.querySelectorAll('.history-item').forEach(el => {
+          el.style.borderColor = '#2D3748';
+          el.style.background = '#16213E';
+        });
+        document.querySelectorAll('.chat-input, .modal input, .modal select').forEach(el => {
+          el.style.background = '#16213E';
+          el.style.borderColor = '#2D3748';
+          el.style.color = '#EAEAEA';
+        });
+        panel.querySelectorAll('h1, .message, .summary-content, .history-item-title, .history-item-url, .history-item-time').forEach(el => {
+          el.style.color = '#EAEAEA';
+        });
+        showToast('Dark mode enabled');
+      } else {
+        location.reload();
+      }
+    });
+
+    // --- Settings Modal ---
+    document.getElementById('btn-settings').addEventListener('click', () => {
+      document.getElementById('modal-overlay').classList.add('active');
+    });
+
+    document.getElementById('btn-cancel-settings').addEventListener('click', () => {
+      document.getElementById('modal-overlay').classList.remove('active');
+    });
+
+    document.getElementById('btn-save-settings').addEventListener('click', () => {
+      document.getElementById('modal-overlay').classList.remove('active');
+      showToast('Settings saved');
+    });
+
+    document.getElementById('modal-overlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('modal-overlay')) {
+        document.getElementById('modal-overlay').classList.remove('active');
+      }
+    });
+
+    // --- Toast ---
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+  </script>
+</body>
+</html>
