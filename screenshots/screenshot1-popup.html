@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fleavi — Store Screenshot 1: Popup Summary</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #1a1a2e; display: flex; justify-content: center; align-items: center; height: 100vh; }
+
+    .frame { width: 1280px; height: 800px; background: #0f0f23; border-radius: 16px; overflow: hidden; position: relative; display: flex; }
+
+    /* Simulated browser */
+    .browser { flex: 1; display: flex; flex-direction: column; }
+    .browser-bar { height: 40px; background: #1e1e3a; display: flex; align-items: center; padding: 0 16px; gap: 12px; }
+    .dots { display: flex; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; }
+    .dot.y { background: #ffbd2e; }
+    .dot.g { background: #28c840; }
+    .url-bar { flex: 1; background: #2a2a4a; border-radius: 6px; padding: 6px 12px; color: #888; font-size: 12px; }
+
+    .page-content { flex: 1; background: #fafafa; padding: 48px; overflow: hidden; }
+    .page-content h1 { font-size: 28px; color: #1a1a2e; margin-bottom: 12px; }
+    .page-content .meta { font-size: 13px; color: #666; margin-bottom: 24px; }
+    .page-content p { font-size: 15px; line-height: 1.7; color: #333; margin-bottom: 16px; max-width: 560px; }
+
+    /* Popup */
+    .popup { position: absolute; right: 80px; top: 40px; width: 380px; background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); overflow: hidden; z-index: 10; }
+    .popup-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #eee; }
+    .popup-header-left { display: flex; align-items: center; gap: 8px; }
+    .popup-logo { width: 24px; height: 24px; background: #6C5CE7; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 700; }
+    .popup-header h2 { font-size: 14px; font-weight: 700; }
+
+    .popup-actions { display: flex; gap: 8px; padding: 12px 16px; }
+    .popup-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .popup-btn.primary { background: #6C5CE7; color: white; }
+    .popup-btn.secondary { background: #f0f0f0; color: #333; border: 1px solid #ddd; }
+
+    .persona-row { display: flex; gap: 4px; padding: 0 16px 8px; overflow: hidden; }
+    .persona-chip { padding: 4px 8px; border: 1px solid #ddd; border-radius: 12px; font-size: 10px; color: #888; white-space: nowrap; }
+    .persona-chip.active { background: rgba(108,92,231,0.1); border-color: #6C5CE7; color: #6C5CE7; }
+
+    .format-row { display: flex; gap: 4px; padding: 0 16px 8px; }
+    .format-chip { padding: 5px 10px; border: 1px solid #ddd; border-radius: 16px; font-size: 11px; color: #888; }
+    .format-chip.active { background: rgba(108,92,231,0.1); border-color: #6C5CE7; color: #6C5CE7; }
+
+    .summary-box { margin: 0 16px 12px; background: #f8f9fa; border-radius: 10px; padding: 14px; max-height: 200px; overflow-y: auto; }
+    .summary-box h4 { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #1a1a2e; }
+    .summary-box ul { padding-left: 16px; }
+    .summary-box li { font-size: 12px; line-height: 1.5; color: #333; margin-bottom: 4px; }
+    .summary-box li::marker { color: #6C5CE7; }
+    .source-link { color: #6C5CE7; font-size: 10px; font-weight: 600; background: rgba(108,92,231,0.1); padding: 1px 4px; border-radius: 3px; text-decoration: none; }
+
+    .export-row { display: flex; gap: 4px; padding: 0 16px 12px; flex-wrap: wrap; }
+    .export-btn { padding: 5px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 10px; color: #888; background: white; }
+
+    .popup-footer { display: flex; justify-content: space-between; padding: 8px 16px; border-top: 1px solid #eee; font-size: 11px; color: #aaa; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+        <div class="url-bar">🔒 en.wikipedia.org/wiki/Nvidia</div>
+      </div>
+      <div class="page-content">
+        <h1>Nvidia Corporation</h1>
+        <div class="meta">From Wikipedia, the free encyclopedia</div>
+        <p>Nvidia Corporation is an American multinational corporation and technology company headquartered in Santa Clara, California, and incorporated in Delaware. It is a software and fabless company which designs and supplies graphics processing units, application programming interface (APIs) for data science and high-performance computing, and system on a chip (SoCs) for the mobile computing and automotive market.</p>
+        <p>The company's GPU products are used in gaming, professional visualization, data centers, and automotive markets. Nvidia's compete in the AI chip market with its H100 and upcoming Blackwell architecture.</p>
+      </div>
+    </div>
+
+    <div class="popup">
+      <div class="popup-header">
+        <div class="popup-header-left">
+          <div class="popup-logo">F</div>
+          <h2>Fleavi</h2>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.32 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      </div>
+
+      <div class="popup-actions">
+        <button class="popup-btn primary">⚡ Summarize</button>
+        <button class="popup-btn secondary">💬 Full Panel</button>
+      </div>
+
+      <div class="persona-row">
+        <span class="persona-chip active">✏️ Standard</span>
+        <span class="persona-chip">👶 ELI5</span>
+        <span class="persona-chip">💼 Executive</span>
+        <span class="persona-chip">🎓 Academic</span>
+        <span class="persona-chip">🚀 Sales</span>
+      </div>
+
+      <div class="format-row">
+        <span class="format-chip active">Bullets</span>
+        <span class="format-chip">Prose</span>
+        <span class="format-chip">Structured</span>
+        <span class="format-chip">Mind Map</span>
+      </div>
+
+      <div class="summary-box">
+        <h4>Key Takeaways</h4>
+        <ul>
+          <li>Nvidia is an American multinational tech company headquartered in Santa Clara, CA <a class="source-link" href="#">[0]</a></li>
+          <li>Designs GPUs, APIs for data science, and SoCs for mobile/automotive <a class="source-link" href="#">[0]</a></li>
+          <li>GPU products serve gaming, professional visualization, data centers, and automotive <a class="source-link" href="#">[1]</a></li>
+          <li>Competing in AI chip market with H100 and Blackwell architecture <a class="source-link" href="#">[1]</a></li>
+        </ul>
+      </div>
+
+      <div class="export-row">
+        <span class="export-btn">📋 Copy</span>
+        <span class="export-btn">📝 Markdown</span>
+        <span class="export-btn">Notion</span>
+        <span class="export-btn">Obsidian</span>
+        <span class="export-btn">Readwise</span>
+      </div>
+
+      <div class="popup-footer">
+        <span>Ctrl+Shift+S</span>
+        <span>History</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

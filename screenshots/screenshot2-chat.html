@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fleavi — Store Screenshot 2: Side Panel & Chat</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #1a1a2e; display: flex; justify-content: center; align-items: center; height: 100vh; }
+
+    .frame { width: 1280px; height: 800px; background: #0f0f23; border-radius: 16px; overflow: hidden; position: relative; display: flex; }
+
+    .browser { flex: 1; display: flex; flex-direction: column; }
+    .browser-bar { height: 40px; background: #1e1e3a; display: flex; align-items: center; padding: 0 16px; gap: 12px; }
+    .dots { display: flex; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; } .dot.y { background: #ffbd2e; } .dot.g { background: #28c840; }
+    .url-bar { flex: 1; background: #2a2a4a; border-radius: 6px; padding: 6px 12px; color: #888; font-size: 12px; }
+
+    .page-content { flex: 1; background: #fafafa; padding: 48px; overflow: hidden; }
+    .page-content h1 { font-size: 28px; color: #1a1a2e; margin-bottom: 12px; }
+    .page-content .meta { font-size: 13px; color: #666; margin-bottom: 24px; }
+    .page-content p { font-size: 15px; line-height: 1.7; color: #333; margin-bottom: 16px; max-width: 560px; }
+
+    /* Side Panel */
+    .sidepanel { width: 380px; background: white; display: flex; flex-direction: column; border-left: 1px solid #eee; }
+
+    .sp-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #eee; }
+    .sp-header-left { display: flex; align-items: center; gap: 8px; }
+    .sp-logo { width: 24px; height: 24px; background: #6C5CE7; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700; }
+    .sp-header h2 { font-size: 14px; font-weight: 700; }
+    .sp-header-actions { display: flex; gap: 4px; }
+    .sp-icon-btn { width: 28px; height: 28px; border: none; background: transparent; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #888; cursor: pointer; }
+
+    .sp-tabs { display: flex; border-bottom: 1px solid #eee; }
+    .sp-tab { flex: 1; padding: 10px; border: none; background: transparent; font-size: 11px; font-weight: 600; color: #aaa; border-bottom: 2px solid transparent; cursor: pointer; text-align: center; }
+    .sp-tab.active { color: #6C5CE7; border-bottom-color: #6C5CE7; }
+
+    .sp-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* Chat View */
+    .chat-messages { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+    .chat-msg { max-width: 85%; padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.5; }
+    .chat-msg.user { align-self: flex-end; background: #6C5CE7; color: white; border-bottom-right-radius: 2px; }
+    .chat-msg.assistant { align-self: flex-start; background: #f0f0f5; color: #333; border-bottom-left-radius: 2px; }
+    .chat-msg.assistant ul { padding-left: 14px; margin-top: 6px; }
+    .chat-msg.assistant li { font-size: 12px; margin-bottom: 3px; }
+    .chat-msg.assistant li::marker { color: #6C5CE7; }
+
+    .chat-suggestions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chat-suggestion { padding: 5px 10px; border: 1px solid #ddd; border-radius: 14px; font-size: 11px; color: #666; background: white; cursor: pointer; }
+
+    .chat-input-area { padding: 12px 16px; border-top: 1px solid #eee; display: flex; gap: 8px; }
+    .chat-input { flex: 1; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; color: #333; outline: none; }
+    .chat-send { width: 36px; height: 36px; border: none; border-radius: 8px; background: #6C5CE7; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+        <div class="url-bar">🔒 arxiv.org/abs/2401.01234</div>
+      </div>
+      <div class="page-content">
+        <h1>Attention Is All You Need: Revisited</h1>
+        <div class="meta">Published: January 2024 &middot; Machine Learning</div>
+        <p>We revisit the Transformer architecture and propose several improvements to the attention mechanism. Our experiments on standard benchmarks show consistent improvements over the baseline while maintaining computational efficiency.</p>
+        <p>The key contributions of this paper include: (1) a novel sparse attention pattern that reduces quadratic complexity to linear, (2) an improved positional encoding scheme that better captures long-range dependencies, and (3) a comprehensive evaluation across 8 NLP tasks.</p>
+        <p>Our results demonstrate that the proposed modifications achieve state-of-the-art performance on machine translation, text summarization, and question answering benchmarks while reducing training time by 40%.</p>
+      </div>
+    </div>
+
+    <div class="sidepanel">
+      <div class="sp-header">
+        <div class="sp-header-left">
+          <div class="sp-logo">F</div>
+          <h2>Fleavi</h2>
+        </div>
+        <div class="sp-header-actions">
+          <button class="sp-icon-btn">🔖</button>
+          <button class="sp-icon-btn">🌙</button>
+          <button class="sp-icon-btn">⚙️</button>
+        </div>
+      </div>
+
+      <div class="sp-tabs">
+        <button class="sp-tab">Summary</button>
+        <button class="sp-tab active">Chat</button>
+        <button class="sp-tab">Read Later</button>
+        <button class="sp-tab">History</button>
+      </div>
+
+      <div class="sp-content">
+        <div class="chat-messages">
+          <div class="chat-msg user">What are the main contributions of this paper?</div>
+          <div class="chat-msg assistant">
+            The paper makes three key contributions:
+            <ul>
+              <li><strong>Sparse attention</strong> — reduces complexity from O(n²) to O(n) while maintaining quality [source: 1]</li>
+              <li><strong>Improved positional encoding</strong> — better captures long-range dependencies in text [source: 1]</li>
+              <li><strong>State-of-the-art results</strong> — achieves top performance on translation, summarization, and QA with 40% faster training [source: 2]</li>
+            </ul>
+          </div>
+          <div class="chat-msg user">How does the sparse attention work?</div>
+          <div class="chat-msg assistant">
+            The sparse attention pattern selectively attends to relevant tokens rather than computing full pairwise attention. This reduces the computational cost from quadratic to linear while preserving the model's ability to capture important relationships in the input.
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <input class="chat-input" placeholder="Ask about this page..." value="What datasets were used for evaluation?" />
+          <button class="chat-send">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

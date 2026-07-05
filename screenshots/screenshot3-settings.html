@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fleavi — Store Screenshot 3: Settings & Integrations</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #1a1a2e; display: flex; justify-content: center; align-items: center; height: 100vh; }
+
+    .frame { width: 1280px; height: 800px; background: #0f0f23; border-radius: 16px; overflow: hidden; position: relative; display: flex; }
+
+    .browser { flex: 1; display: flex; flex-direction: column; }
+    .browser-bar { height: 40px; background: #1e1e3a; display: flex; align-items: center; padding: 0 16px; gap: 12px; }
+    .dots { display: flex; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; } .dot.y { background: #ffbd2e; } .dot.g { background: #28c840; }
+    .url-bar { flex: 1; background: #2a2a4a; border-radius: 6px; padding: 6px 12px; color: #888; font-size: 12px; }
+
+    .page-content { flex: 1; background: #fafafa; padding: 48px; overflow: hidden; position: relative; }
+    .page-content h1 { font-size: 28px; color: #1a1a2e; margin-bottom: 12px; }
+    .page-content .meta { font-size: 13px; color: #666; margin-bottom: 24px; }
+    .page-content p { font-size: 15px; line-height: 1.7; color: #333; margin-bottom: 16px; max-width: 560px; }
+
+    /* Overlay for settings modal */
+    .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; justify-content: flex-end; align-items: flex-start; }
+
+    /* Side Panel */
+    .sidepanel { width: 380px; height: 100%; background: white; display: flex; flex-direction: column; }
+
+    .sp-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #eee; }
+    .sp-header-left { display: flex; align-items: center; gap: 8px; }
+    .sp-logo { width: 24px; height: 24px; background: #6C5CE7; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700; }
+    .sp-header h2 { font-size: 14px; font-weight: 700; }
+    .sp-header-actions { display: flex; gap: 4px; }
+    .sp-icon-btn { width: 28px; height: 28px; border: none; background: transparent; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #888; }
+
+    .sp-tabs { display: flex; border-bottom: 1px solid #eee; }
+    .sp-tab { flex: 1; padding: 10px; border: none; background: transparent; font-size: 11px; font-weight: 600; color: #aaa; border-bottom: 2px solid transparent; text-align: center; }
+    .sp-tab.active { color: #6C5CE7; border-bottom-color: #6C5CE7; }
+
+    .sp-content { flex: 1; display: flex; flex-direction: column; padding: 16px; gap: 10px; overflow: hidden; }
+
+    /* Summary with exports */
+    .persona-bar { display: flex; gap: 4px; flex-wrap: wrap; }
+    .persona-chip { padding: 4px 8px; border: 1px solid #ddd; border-radius: 12px; font-size: 10px; color: #888; }
+    .persona-chip.active { background: rgba(108,92,231,0.1); border-color: #6C5CE7; color: #6C5CE7; }
+
+    .format-row { display: flex; gap: 4px; }
+    .format-chip { padding: 5px 10px; border: 1px solid #ddd; border-radius: 16px; font-size: 11px; color: #888; }
+    .format-chip.active { background: rgba(108,92,231,0.1); border-color: #6C5CE7; color: #6C5CE7; }
+
+    .length-row { display: flex; gap: 3px; background: #f5f5f5; border-radius: 6px; padding: 2px; }
+    .length-btn { flex: 1; padding: 5px; border: none; border-radius: 5px; font-size: 11px; color: #aaa; background: transparent; text-align: center; }
+    .length-btn.active { background: white; color: #333; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+    .translate-row { display: flex; align-items: center; gap: 8px; }
+    .translate-label { font-size: 11px; color: #888; display: flex; align-items: center; gap: 4px; }
+    .translate-select { flex: 1; padding: 4px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 11px; color: #333; }
+
+    .summarize-btn { width: 100%; padding: 10px; border: none; border-radius: 8px; background: #6C5CE7; color: white; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+    .summary-output { flex: 1; background: #f8f9fa; border-radius: 10px; padding: 14px; overflow: hidden; }
+    .summary-output h4 { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+    .summary-output ul { padding-left: 16px; }
+    .summary-output li { font-size: 12px; line-height: 1.5; color: #333; margin-bottom: 4px; }
+    .summary-output li::marker { color: #6C5CE7; }
+    .source-link { color: #6C5CE7; font-size: 10px; font-weight: 600; background: rgba(108,92,231,0.1); padding: 1px 4px; border-radius: 3px; text-decoration: none; }
+
+    .export-bar { display: flex; gap: 4px; flex-wrap: wrap; padding-top: 10px; border-top: 1px solid #eee; margin-top: 10px; }
+    .export-btn { padding: 5px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 10px; color: #888; background: white; }
+
+    .usage-banner { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-radius: 6px; background: rgba(108,92,231,0.1); font-size: 11px; color: #6C5CE7; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+        <div class="url-bar">🔒 medium.com/article/ai-future-2026</div>
+      </div>
+      <div class="page-content">
+        <h1>The Future of AI in 2026</h1>
+        <div class="meta">Published July 5, 2026 &middot; Technology</div>
+        <p>Artificial intelligence continues to reshape industries at an unprecedented pace. From healthcare diagnostics to autonomous vehicles, AI systems are becoming integral to daily life.</p>
+        <p>Recent breakthroughs in large language models have enabled more natural human-computer interaction, while edge AI brings processing power to everyday devices.</p>
+      </div>
+    </div>
+
+    <div class="sidepanel">
+      <div class="sp-header">
+        <div class="sp-header-left">
+          <div class="sp-logo">F</div>
+          <h2>Fleavi</h2>
+        </div>
+        <div class="sp-header-actions">
+          <button class="sp-icon-btn">🔖</button>
+          <button class="sp-icon-btn">🌙</button>
+          <button class="sp-icon-btn">⚙️</button>
+        </div>
+      </div>
+
+      <div class="sp-tabs">
+        <button class="sp-tab active">Summary</button>
+        <button class="sp-tab">Chat</button>
+        <button class="sp-tab">Read Later</button>
+        <button class="sp-tab">History</button>
+      </div>
+
+      <div class="sp-content">
+        <div class="usage-banner">
+          <span>18/20 free summaries left today</span>
+          <a href="#" style="color:#6C5CE7;font-weight:600;text-decoration:none;">Get unlimited →</a>
+        </div>
+
+        <div class="persona-bar">
+          <span class="persona-chip active">✏️ Standard</span>
+          <span class="persona-chip">👶 ELI5</span>
+          <span class="persona-chip active">💼 Executive</span>
+          <span class="persona-chip">🎓 Academic</span>
+          <span class="persona-chip">🚀 Sales</span>
+          <span class="persona-chip">👋 Casual</span>
+        </div>
+
+        <div class="format-row">
+          <span class="format-chip active">Bullets</span>
+          <span class="format-chip">Prose</span>
+          <span class="format-chip">Structured</span>
+          <span class="format-chip">Mind Map</span>
+        </div>
+
+        <div class="length-row">
+          <button class="length-btn">Short</button>
+          <button class="length-btn active">Medium</button>
+          <button class="length-btn">Detailed</button>
+        </div>
+
+        <div class="translate-row">
+          <span class="translate-label">🌍 Translate to</span>
+          <select class="translate-select">
+            <option>None (English)</option>
+            <option>Spanish</option>
+            <option>French</option>
+            <option>German</option>
+            <option>Japanese</option>
+          </select>
+        </div>
+
+        <button class="summarize-btn">⚡ Summarize This Page</button>
+
+        <div class="summary-output">
+          <h4>Key Takeaways</h4>
+          <ul>
+            <li>AI is reshaping healthcare, automotive, and daily life at unprecedented pace <a class="source-link" href="#">[0]</a></li>
+            <li>Large language models enable more natural human-computer interaction <a class="source-link" href="#">[1]</a></li>
+            <li>Edge AI brings processing power to everyday devices <a class="source-link" href="#">[1]</a></li>
+          </ul>
+          <div class="export-bar">
+            <span class="export-btn">📋 Copy</span>
+            <span class="export-btn">📝 Markdown</span>
+            <span class="export-btn">Notion</span>
+            <span class="export-btn">Obsidian</span>
+            <span class="export-btn">Readwise</span>
+            <span class="export-btn">Kindle</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
